@@ -1,4 +1,4 @@
-package com.fanhl.wallmoving.sample.services
+package com.fanhl.wallmoving.services
 
 import android.service.wallpaper.WallpaperService
 

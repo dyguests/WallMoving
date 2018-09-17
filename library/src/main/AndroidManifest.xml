@@ -1,3 +1,18 @@
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.fanhl.wallmoving"/>
+    package="com.fanhl.wallmoving">
+
+    <application>
+        <service
+            android:name="com.fanhl.wallmoving.services.FallingSnowWallpaperService"
+            android:label="@string/app_name"
+            android:permission="android.permission.BIND_WALLPAPER">
+            <intent-filter>
+                <action android:name="android.service.wallpaper.WallpaperService"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.service.wallpaper"
+                android:resource="@xml/fallingsnow_wp"/>
+        </service>
+    </application>
+</manifest>
