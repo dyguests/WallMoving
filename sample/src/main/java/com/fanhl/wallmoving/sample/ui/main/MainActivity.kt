@@ -1,7 +1,8 @@
-package com.fanhl.wallmoving.sample
+package com.fanhl.wallmoving.sample.ui.main
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import com.fanhl.wallmoving.sample.R
 
 class MainActivity : AppCompatActivity() {
 
