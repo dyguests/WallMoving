@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Library</string>
-    <string name="fallingsnow_wp_desc">WallMoving Desc for this wallpaper</string>
     <string name="kona_wallpaper">Kona Wallpaper</string>
     <string name="kona_wallpaper_desc">A live wallpaper by Kona.</string>
 </resources>
