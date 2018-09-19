@@ -1,10 +1,11 @@
 package com.fanhl.wallmoving.sample.ui.main
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import com.fanhl.wallmoving.model.WallpaperConfig
 import com.fanhl.wallmoving.sample.R
+import com.fanhl.wallmoving.util.ParcelableUtil
 
 class MainActivity : AppCompatActivity() {
 
@@ -16,9 +17,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initData() {
+        val wallpaperConfig = WallpaperConfig(
+            "",
+            0f,
+            0f,
+            0f,
+            0f,
+            0f
+        )
+
         val preferences = getPreferences(Context.MODE_PRIVATE)
         preferences.edit().apply {
-//            putString()
+            putString(
+                WallpaperConfig.SP_KEY,
+                ParcelableUtil.marshall(wallpaperConfig).toString()
+            )
             apply()
         }
     }
