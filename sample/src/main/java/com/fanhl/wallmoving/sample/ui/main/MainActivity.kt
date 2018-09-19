@@ -18,12 +18,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun initData() {
         val wallpaperConfig = WallpaperConfig(
-            "test",
-            0f,
-            0f,
-            0f,
-            0f,
-            0f
+            "/storage/emulated/0/com.fanhl.kona/photos/269936.jpg",
+            0.5f,
+            0.5f,
+            0.8f,
+            1f,
+            1f
         )
 
         PreferenceManager.getDefaultSharedPreferences(this).edit().apply {
