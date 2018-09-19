@@ -1,5 +1,7 @@
 package com.fanhl.wallmoving.model
 
-class Wallpaper {
+import android.graphics.Bitmap
+
+class Wallpaper(bitmap: Bitmap, scale: Float) {
 
 }
