@@ -2,6 +2,7 @@ package com.fanhl.wallmoving.services
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -13,8 +14,10 @@ import android.os.Handler
 import android.preference.PreferenceManager
 import android.service.wallpaper.WallpaperService
 import android.view.SurfaceHolder
+import com.fanhl.wallmoving.model.Coord
 import com.fanhl.wallmoving.model.Vector3
 import com.fanhl.wallmoving.model.WallpaperConfig
+import com.fanhl.wallmoving.util.WallpaperUtils
 import com.google.gson.Gson
 
 /**
@@ -56,9 +59,20 @@ class ActiveWallpaperService : WallpaperService() {
 
         /** 壁纸配置信息 */
         private var wallpaperConfig: WallpaperConfig? = null
+            set(value) {
+                if (field == value) {
+                    return
+                }
+
+                field = value
+                loadBitmap(value ?: return)
+            }
+
+        private var bitmap: Bitmap? = null
 
         private val paint = Paint()
 
+        // 屏幕尺寸
         private var width: Int = 0
         private var height: Int = 0
 
@@ -120,6 +134,15 @@ class ActiveWallpaperService : WallpaperService() {
         private fun draw(canvas: Canvas) {
             canvas.drawColor(Color.BLACK)
             canvas.drawCircle(width / 2f + rotation.x * 100f, height / 2f + rotation.y * 100f, 100f, paint)
+        }
+
+        /**
+         * 加载对应的图像
+         */
+        private fun loadBitmap(config: WallpaperConfig) {
+            WallpaperUtils.loadWallpaperAsync(config, Coord(width, height)) {
+
+            }
         }
 
         /**
