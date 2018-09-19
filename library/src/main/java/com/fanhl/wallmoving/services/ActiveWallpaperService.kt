@@ -9,9 +9,12 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Handler
+import android.preference.PreferenceManager
 import android.service.wallpaper.WallpaperService
 import android.view.SurfaceHolder
 import com.fanhl.wallmoving.model.Vector3
+import com.fanhl.wallmoving.model.WallpaperConfig
+import com.fanhl.wallmoving.util.ParcelableUtil
 
 /**
  * 动态壁纸服务
@@ -48,6 +51,9 @@ class ActiveWallpaperService : WallpaperService() {
             }
         }
 
+        /** 壁纸配置信息 */
+        private var wallpaperConfig: WallpaperConfig? = null
+
         private val paint = Paint()
 
         private var width: Int = 0
@@ -59,6 +65,26 @@ class ActiveWallpaperService : WallpaperService() {
 
         init {
             paint.color = Color.RED
+
+            // 当 SP_KEY 数据变更时重新刷新数据
+            PreferenceManager.getDefaultSharedPreferences(this@ActiveWallpaperService).apply {
+                wallpaperConfig = try {
+                    val source = getString(WallpaperConfig.SP_KEY, "")
+                    val parcel = ParcelableUtil.unmarshall(source.toByteArray())
+                    WallpaperConfig.CREATOR.createFromParcel(parcel)
+                } catch (e: Exception) {
+                    null
+                }
+
+                registerOnSharedPreferenceChangeListener { sharedPreferences, key ->
+                    when (key) {
+                        WallpaperConfig.SP_KEY -> {
+                        }
+                        else -> {
+                        }
+                    }
+                }
+            }
         }
 
         override fun onVisibilityChanged(visible: Boolean) {
