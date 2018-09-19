@@ -2,7 +2,6 @@ package com.fanhl.wallmoving.services
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -13,12 +12,15 @@ import android.hardware.SensorManager
 import android.os.Handler
 import android.preference.PreferenceManager
 import android.service.wallpaper.WallpaperService
+import android.util.Log
 import android.view.SurfaceHolder
 import com.fanhl.wallmoving.model.Coord
 import com.fanhl.wallmoving.model.Vector3
+import com.fanhl.wallmoving.model.Wallpaper
 import com.fanhl.wallmoving.model.WallpaperConfig
 import com.fanhl.wallmoving.util.WallpaperUtils
 import com.google.gson.Gson
+import org.jetbrains.anko.runOnUiThread
 
 /**
  * 动态壁纸服务
@@ -65,10 +67,21 @@ class ActiveWallpaperService : WallpaperService() {
                 }
 
                 field = value
-                loadBitmap(value ?: return)
+                loadWallpaper(value ?: return)
             }
 
-        private var bitmap: Bitmap? = null
+        private var wallpaper: Wallpaper? = null
+            set(value) {
+                if (field == value) {
+                    return
+                }
+
+                field = value
+
+                if (value != null) {
+                    handler.post(runner)
+                }
+            }
 
         private val paint = Paint()
 
@@ -115,6 +128,8 @@ class ActiveWallpaperService : WallpaperService() {
             super.onSurfaceChanged(holder, format, width, height)
             this.width = width
             this.height = height
+
+            loadWallpaper(wallpaperConfig ?: return)
         }
 
         private fun draw() {
@@ -132,6 +147,8 @@ class ActiveWallpaperService : WallpaperService() {
         }
 
         private fun draw(canvas: Canvas) {
+            Log.i(TAG, "Wallpaper scale:${wallpaper?.scale}")
+
             canvas.drawColor(Color.BLACK)
             canvas.drawCircle(width / 2f + rotation.x * 100f, height / 2f + rotation.y * 100f, 100f, paint)
         }
@@ -139,9 +156,12 @@ class ActiveWallpaperService : WallpaperService() {
         /**
          * 加载对应的图像
          */
-        private fun loadBitmap(config: WallpaperConfig) {
-            WallpaperUtils.loadWallpaperAsync(config, Coord(width, height)) {
-
+        private fun loadWallpaper(config: WallpaperConfig) {
+            val screenSize = Coord(width, height)
+            WallpaperUtils.loadWallpaperAsync(config, screenSize) {
+                runOnUiThread {
+                    this@ActiveWallpaper.wallpaper = it
+                }
             }
         }
 
