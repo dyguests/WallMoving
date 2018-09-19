@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun initData() {
         val wallpaperConfig = WallpaperConfig(
-            "/storage/emulated/0/com.fanhl.kona/photos/269936.jpg",
+            "/storage/emulated/0/com.fanhl.kona/photos/269936.jpg"/* TODO add your image path here. */,
             0.5f,
             0.5f,
             0.8f,
