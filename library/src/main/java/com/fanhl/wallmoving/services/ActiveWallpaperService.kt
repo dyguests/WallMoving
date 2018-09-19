@@ -12,11 +12,10 @@ import android.hardware.SensorManager
 import android.os.Handler
 import android.preference.PreferenceManager
 import android.service.wallpaper.WallpaperService
-import android.util.Log
 import android.view.SurfaceHolder
 import com.fanhl.wallmoving.model.Vector3
 import com.fanhl.wallmoving.model.WallpaperConfig
-import com.fanhl.wallmoving.util.ParcelableUtil
+import com.google.gson.Gson
 
 /**
  * 动态壁纸服务
@@ -52,6 +51,8 @@ class ActiveWallpaperService : WallpaperService() {
                 handler.post(runner)
             }
         }
+
+        private val gson by lazy { Gson() }
 
         /** 壁纸配置信息 */
         private var wallpaperConfig: WallpaperConfig? = null
@@ -117,8 +118,6 @@ class ActiveWallpaperService : WallpaperService() {
         }
 
         private fun draw(canvas: Canvas) {
-            Log.i(TAG, "draw: wallpaperConfig:${wallpaperConfig?.path}")
-
             canvas.drawColor(Color.BLACK)
             canvas.drawCircle(width / 2f + rotation.x * 100f, height / 2f + rotation.y * 100f, 100f, paint)
         }
@@ -129,8 +128,7 @@ class ActiveWallpaperService : WallpaperService() {
         private fun SharedPreferences.readWallpaperConfig(): WallpaperConfig? {
             return try {
                 val source = getString(WallpaperConfig.SP_KEY, "")
-                val parcel = ParcelableUtil.unmarshall(source.toByteArray())
-                WallpaperConfig.CREATOR.createFromParcel(parcel)
+                gson.fromJson(source, WallpaperConfig::class.java)
             } catch (e: Exception) {
                 null
             }
