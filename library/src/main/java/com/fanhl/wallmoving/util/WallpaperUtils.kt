@@ -5,12 +5,15 @@ import com.fanhl.wallmoving.model.Coord
 import com.fanhl.wallmoving.model.Vector2
 import com.fanhl.wallmoving.model.Wallpaper
 import com.fanhl.wallmoving.model.WallpaperConfig
+import org.jetbrains.anko.doAsync
 import java.io.File
 import java.io.FileInputStream
 
 object WallpaperUtils {
     fun loadWallpaperAsync(config: WallpaperConfig, screenSize: Coord, onWallpaperGot: (Wallpaper?) -> Unit) {
-
+        doAsync {
+            loadWallpaper(config, screenSize, onWallpaperGot)
+        }
     }
 
     fun loadWallpaper(config: WallpaperConfig, screenSize: Coord, onWallpaperGot: (Wallpaper?) -> Unit) {
@@ -129,5 +132,4 @@ object WallpaperUtils {
         BitmapFactory.decodeStream(fileInputStream, null, sizeOptions)
         return Pair(sizeOptions.outWidth, sizeOptions.outHeight)
     }
-
 }
