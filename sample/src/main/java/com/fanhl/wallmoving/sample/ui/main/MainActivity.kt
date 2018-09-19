@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun initData() {
         val wallpaperConfig = WallpaperConfig(
-            "",
+            "test",
             0f,
             0f,
             0f,

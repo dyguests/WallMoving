@@ -1,6 +1,7 @@
 package com.fanhl.wallmoving.services
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -11,6 +12,7 @@ import android.hardware.SensorManager
 import android.os.Handler
 import android.preference.PreferenceManager
 import android.service.wallpaper.WallpaperService
+import android.util.Log
 import android.view.SurfaceHolder
 import com.fanhl.wallmoving.model.Vector3
 import com.fanhl.wallmoving.model.WallpaperConfig
@@ -68,17 +70,12 @@ class ActiveWallpaperService : WallpaperService() {
 
             // 当 SP_KEY 数据变更时重新刷新数据
             PreferenceManager.getDefaultSharedPreferences(this@ActiveWallpaperService).apply {
-                wallpaperConfig = try {
-                    val source = getString(WallpaperConfig.SP_KEY, "")
-                    val parcel = ParcelableUtil.unmarshall(source.toByteArray())
-                    WallpaperConfig.CREATOR.createFromParcel(parcel)
-                } catch (e: Exception) {
-                    null
-                }
+                wallpaperConfig = readWallpaperConfig()
 
                 registerOnSharedPreferenceChangeListener { sharedPreferences, key ->
                     when (key) {
                         WallpaperConfig.SP_KEY -> {
+                            wallpaperConfig = readWallpaperConfig()
                         }
                         else -> {
                         }
@@ -120,8 +117,23 @@ class ActiveWallpaperService : WallpaperService() {
         }
 
         private fun draw(canvas: Canvas) {
+            Log.i(TAG, "draw: wallpaperConfig:${wallpaperConfig?.path}")
+
             canvas.drawColor(Color.BLACK)
             canvas.drawCircle(width / 2f + rotation.x * 100f, height / 2f + rotation.y * 100f, 100f, paint)
+        }
+
+        /**
+         * 读取壁纸配置信息
+         */
+        private fun SharedPreferences.readWallpaperConfig(): WallpaperConfig? {
+            return try {
+                val source = getString(WallpaperConfig.SP_KEY, "")
+                val parcel = ParcelableUtil.unmarshall(source.toByteArray())
+                WallpaperConfig.CREATOR.createFromParcel(parcel)
+            } catch (e: Exception) {
+                null
+            }
         }
     }
 }
