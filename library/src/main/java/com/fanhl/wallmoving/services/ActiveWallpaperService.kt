@@ -65,7 +65,7 @@ class ActiveWallpaperService : WallpaperService() {
         }
 
         private fun draw(canvas: Canvas) {
-            canvas.drawCircle(200f, 200f, 100f, paint)
+            canvas.drawCircle(width / 2f, height / 2f, 100f, paint)
         }
     }
 }
