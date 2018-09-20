@@ -78,29 +78,37 @@ class ActiveWallpaperService : WallpaperService() {
 
                 field = value
 
+                wallpaperDrawer.wallpaper = value
                 if (value != null) {
                     handler.post(runner)
                 }
             }
 
-        private val paint = Paint()
+        private val wallpaperDrawer = WallpaperDrawer()
+
+        private val paint = Paint().apply {
+            color = Color.RED
+        }
 
         // 屏幕尺寸
-        private var width: Int = 0
-        private var height: Int = 0
+        private var screenSize = Coord()
+            set(value) {
+                if (field == value) {
+                    return
+                }
+
+                field = value
+                wallpaperDrawer.dstRect.apply {
+                    right = value.x
+                    bottom = value.y
+                }
+            }
 
         private var visible = true
 
         private var rotation = Vector3()
 
-        // 这里存放bitmap要显示的区域
-        private val srcRect = Rect()
-        // 这里存放canvas用来显示的区域
-        private val dstRect = Rect()
-
         init {
-            paint.color = Color.RED
-
             // 当 SP_KEY 数据变更时重新刷新数据
             PreferenceManager.getDefaultSharedPreferences(this@ActiveWallpaperService).apply {
                 wallpaperConfig = readWallpaperConfig()
@@ -131,13 +139,7 @@ class ActiveWallpaperService : WallpaperService() {
 
         override fun onSurfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
             super.onSurfaceChanged(holder, format, width, height)
-            this.width = width
-            this.height = height
-
-            dstRect.apply {
-                right = width
-                bottom = height
-            }
+            screenSize = Coord(width, height)
             loadWallpaper(wallpaperConfig ?: return)
         }
 
@@ -158,20 +160,15 @@ class ActiveWallpaperService : WallpaperService() {
         private fun draw(canvas: Canvas) {
             canvas.drawColor(Color.BLACK)
 
-            srcRect.apply {
-                right = 500
-                bottom = 500
-            }
-            canvas.drawBitmap(wallpaper?.bitmap ?: return, srcRect, dstRect, paint)
+            wallpaperDrawer.draw(canvas, rotation)
 
-            canvas.drawCircle(width / 2f + rotation.x * 100f, height / 2f + rotation.y * 100f, 100f, paint)
+            canvas.drawCircle(screenSize.x / 2f + rotation.x * 100f, screenSize.y / 2f + rotation.y * 100f, 100f, paint)
         }
 
         /**
          * 加载对应的图像
          */
         private fun loadWallpaper(config: WallpaperConfig) {
-            val screenSize = Coord(width, height)
             WallpaperUtils.loadWallpaperAsync(config, screenSize) {
                 runOnUiThread {
                     this@ActiveWallpaper.wallpaper = it
@@ -191,4 +188,30 @@ class ActiveWallpaperService : WallpaperService() {
             }
         }
     }
+}
+
+/**
+ * 绘制帮助类
+ */
+class WallpaperDrawer {
+    private val paint = Paint()
+
+    var wallpaper: Wallpaper? = null
+
+    // 这里存放bitmap要显示的区域
+    val srcRect = Rect()
+    // 这里存放canvas用来显示的区域
+    val dstRect = Rect()
+
+
+    fun draw(canvas: Canvas, rotation: Vector3) {
+        srcRect.apply {
+            left = 500
+            top = 500
+            right = 1100
+            bottom = 1100
+        }
+        canvas.drawBitmap(wallpaper?.bitmap ?: return, srcRect, dstRect, paint)
+    }
+
 }
