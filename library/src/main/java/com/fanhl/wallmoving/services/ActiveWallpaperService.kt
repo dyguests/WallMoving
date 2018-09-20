@@ -131,7 +131,7 @@ class ActiveWallpaperService : WallpaperService() {
             this.visible = visible
             if (visible) {
                 handler.post(runner)
-                sensorManager.registerListener(gravitySensorEventListener, gravitySensor, SensorManager.SENSOR_DELAY_FASTEST)
+                sensorManager.registerListener(gravitySensorEventListener, gravitySensor, SensorManager.SENSOR_DELAY_UI)
             } else {
                 handler.removeCallbacks(runner)
                 sensorManager.unregisterListener(gravitySensorEventListener)
