@@ -159,8 +159,6 @@ class ActiveWallpaperService : WallpaperService() {
         }
 
         private fun draw(canvas: Canvas) {
-            canvas.drawColor(Color.BLACK)
-
             wallpaperDrawer.draw(canvas, rotation)
 
             canvas.drawCircle(screenSize.x / 2f + rotation.x * 100f, screenSize.y / 2f + rotation.y * 100f, 100f, paint)
