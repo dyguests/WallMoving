@@ -8,6 +8,7 @@ import com.fanhl.wallmoving.model.WallpaperConfig
 import org.jetbrains.anko.doAsync
 import java.io.File
 import java.io.FileInputStream
+import java.io.FileNotFoundException
 
 object WallpaperUtils {
     fun loadWallpaperAsync(config: WallpaperConfig, screenSize: Coord, onWallpaperGot: (Wallpaper?) -> Unit) {
@@ -23,13 +24,19 @@ object WallpaperUtils {
             return
         }
 
-        val fileInputStream = FileInputStream(file)
+        val fileInputStream = try {
+            FileInputStream(file)
+        } catch (e: FileNotFoundException) {
+            onWallpaperGot(null)
+            return
+        }
 
         val (sourceWidth, sourceHeight) = getBitmapSize(fileInputStream)
         val (screenWidth, screenHeight) = screenSize
 
         if (sourceWidth <= 0 || sourceHeight <= 0
-                || screenWidth <= 0 || screenHeight <= 0) {
+            || screenWidth <= 0 || screenHeight <= 0
+        ) {
             onWallpaperGot(null)
             return
         }
@@ -59,10 +66,10 @@ object WallpaperUtils {
 
         // 获取scale后默认在屏幕上居中显示的区域
         val centralScaledRect = RectF(
-                centralPx - smmWidth * config.scale,
-                centralPy - smmHeight * config.scale,
-                centralPx + smmWidth * config.scale,
-                centralPy + smmHeight * config.scale
+            centralPx - smmWidth * config.scale,
+            centralPy - smmHeight * config.scale,
+            centralPx + smmWidth * config.scale,
+            centralPy + smmHeight * config.scale
         )
 
         // 获取默认显示的区域的边距（只算最小边距）
@@ -75,25 +82,25 @@ object WallpaperUtils {
 
         // 生成总共需要用来的图片区域 (Float)（默认区域+偏移区域）
         val visibleRectF = RectF(
-                centralScaledRect.left - offsetPx,
-                centralScaledRect.top - offsetPy,
-                centralScaledRect.right + offsetPx,
-                centralScaledRect.bottom + offsetPy
+            centralScaledRect.left - offsetPx,
+            centralScaledRect.top - offsetPy,
+            centralScaledRect.right + offsetPx,
+            centralScaledRect.bottom + offsetPy
         )
 
         // 生成总共需要用来的图片区域 (Int 这里用Int是为了之后从文件中读取对应区域)（默认区域+偏移区域）
         // 此处用 minOf、maxOf 是为了防止浮点运算时越界
         val visibleRect = Rect(
-                maxOf(0, visibleRectF.left.toInt()),
-                maxOf(0, visibleRectF.top.toInt()),
-                minOf(sourceWidth, visibleRectF.right.toInt()),
-                minOf(sourceHeight, visibleRectF.bottom.toInt())
+            maxOf(0, visibleRectF.left.toInt()),
+            maxOf(0, visibleRectF.top.toInt()),
+            minOf(sourceWidth, visibleRectF.right.toInt()),
+            minOf(sourceHeight, visibleRectF.bottom.toInt())
         )
 
         // 生成默认显示区域相对比总显示区域的缩放比率（只算最小的）
         val scaleVisible = minOf(
-                centralScaledRect.width() / visibleRectF.width(),
-                centralScaledRect.height() / visibleRectF.height()
+            centralScaledRect.width() / visibleRectF.width(),
+            centralScaledRect.height() / visibleRectF.height()
         )
 
         // 加载要用到的图片区域
@@ -106,8 +113,8 @@ object WallpaperUtils {
 
         // 生成Wallpaper信息
         val wallpaper = Wallpaper(
-                bitmap,
-                scaleVisible
+            bitmap,
+            scaleVisible
         )
 
         onWallpaperGot(wallpaper)
