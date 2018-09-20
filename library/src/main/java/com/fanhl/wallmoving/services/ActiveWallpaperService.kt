@@ -5,7 +5,6 @@ import android.content.SharedPreferences
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.graphics.Rect
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -18,6 +17,7 @@ import com.fanhl.wallmoving.model.Coord
 import com.fanhl.wallmoving.model.Vector3
 import com.fanhl.wallmoving.model.Wallpaper
 import com.fanhl.wallmoving.model.WallpaperConfig
+import com.fanhl.wallmoving.util.WallpaperDrawer
 import com.fanhl.wallmoving.util.WallpaperUtils
 import com.google.gson.Gson
 import org.jetbrains.anko.runOnUiThread
@@ -101,6 +101,7 @@ class ActiveWallpaperService : WallpaperService() {
                 wallpaperDrawer.dstRect.apply {
                     right = value.x
                     bottom = value.y
+                    wallpaperDrawer.notifyDstRectChanged()
                 }
             }
 
@@ -190,28 +191,3 @@ class ActiveWallpaperService : WallpaperService() {
     }
 }
 
-/**
- * 绘制帮助类
- */
-class WallpaperDrawer {
-    private val paint = Paint()
-
-    var wallpaper: Wallpaper? = null
-
-    // 这里存放bitmap要显示的区域
-    val srcRect = Rect()
-    // 这里存放canvas用来显示的区域
-    val dstRect = Rect()
-
-
-    fun draw(canvas: Canvas, rotation: Vector3) {
-        srcRect.apply {
-            left = 500
-            top = 500
-            right = 1100
-            bottom = 1100
-        }
-        canvas.drawBitmap(wallpaper?.bitmap ?: return, srcRect, dstRect, paint)
-    }
-
-}

@@ -22,8 +22,8 @@ class MainActivity : AppCompatActivity() {
             0.5f,
             0.5f,
             0.8f,
-            1f,
-            1f
+            0.5f,
+            0.5f
         )
 
         PreferenceManager.getDefaultSharedPreferences(this).edit().apply {
