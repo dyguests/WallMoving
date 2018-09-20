@@ -12,10 +12,15 @@ import android.hardware.SensorManager
 import android.os.Handler
 import android.preference.PreferenceManager
 import android.service.wallpaper.WallpaperService
+import android.util.Log
 import android.view.SurfaceHolder
+import com.fanhl.wallmoving.model.Coord
 import com.fanhl.wallmoving.model.Vector3
+import com.fanhl.wallmoving.model.Wallpaper
 import com.fanhl.wallmoving.model.WallpaperConfig
+import com.fanhl.wallmoving.util.WallpaperUtils
 import com.google.gson.Gson
+import org.jetbrains.anko.runOnUiThread
 
 /**
  * 动态壁纸服务
@@ -56,9 +61,31 @@ class ActiveWallpaperService : WallpaperService() {
 
         /** 壁纸配置信息 */
         private var wallpaperConfig: WallpaperConfig? = null
+            set(value) {
+                if (field == value) {
+                    return
+                }
+
+                field = value
+                loadWallpaper(value ?: return)
+            }
+
+        private var wallpaper: Wallpaper? = null
+            set(value) {
+                if (field == value) {
+                    return
+                }
+
+                field = value
+
+                if (value != null) {
+                    handler.post(runner)
+                }
+            }
 
         private val paint = Paint()
 
+        // 屏幕尺寸
         private var width: Int = 0
         private var height: Int = 0
 
@@ -101,6 +128,8 @@ class ActiveWallpaperService : WallpaperService() {
             super.onSurfaceChanged(holder, format, width, height)
             this.width = width
             this.height = height
+
+            loadWallpaper(wallpaperConfig ?: return)
         }
 
         private fun draw() {
@@ -118,8 +147,22 @@ class ActiveWallpaperService : WallpaperService() {
         }
 
         private fun draw(canvas: Canvas) {
+            Log.i(TAG, "Wallpaper scale:${wallpaper?.scale}")
+
             canvas.drawColor(Color.BLACK)
             canvas.drawCircle(width / 2f + rotation.x * 100f, height / 2f + rotation.y * 100f, 100f, paint)
+        }
+
+        /**
+         * 加载对应的图像
+         */
+        private fun loadWallpaper(config: WallpaperConfig) {
+            val screenSize = Coord(width, height)
+            WallpaperUtils.loadWallpaperAsync(config, screenSize) {
+                runOnUiThread {
+                    this@ActiveWallpaper.wallpaper = it
+                }
+            }
         }
 
         /**
