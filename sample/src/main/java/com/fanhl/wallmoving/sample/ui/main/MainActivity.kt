@@ -1,11 +1,10 @@
 package com.fanhl.wallmoving.sample.ui.main
 
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.support.v7.app.AppCompatActivity
+import com.fanhl.wallmoving.WallMovingApi
 import com.fanhl.wallmoving.model.WallpaperConfig
 import com.fanhl.wallmoving.sample.R
-import com.google.gson.Gson
 
 class MainActivity : AppCompatActivity() {
 
@@ -26,12 +25,6 @@ class MainActivity : AppCompatActivity() {
             0.5f
         )
 
-        PreferenceManager.getDefaultSharedPreferences(this).edit().apply {
-            putString(
-                WallpaperConfig.SP_KEY,
-                Gson().toJson(wallpaperConfig)
-            )
-            apply()
-        }
+        WallMovingApi.setWallPaper(this, wallpaperConfig)
     }
 }

@@ -12,11 +12,11 @@ package com.fanhl.wallmoving.model
  */
 data class WallpaperConfig(
     val path: String,
-    val centralX: Float,
-    val centralY: Float,
-    val scale: Float,
-    val offsetX: Float,
-    val offsetY: Float
+    val centralX: Float = 0.5f,
+    val centralY: Float = 0.5f,
+    val scale: Float = 1f,
+    val offsetX: Float = 1f,
+    val offsetY: Float = 1f
 ) {
     companion object {
         const val SP_KEY = "WallpaperConfig"
