@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Rect
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -12,7 +13,6 @@ import android.hardware.SensorManager
 import android.os.Handler
 import android.preference.PreferenceManager
 import android.service.wallpaper.WallpaperService
-import android.util.Log
 import android.view.SurfaceHolder
 import com.fanhl.wallmoving.model.Coord
 import com.fanhl.wallmoving.model.Vector3
@@ -93,6 +93,11 @@ class ActiveWallpaperService : WallpaperService() {
 
         private var rotation = Vector3()
 
+        // 这里存放bitmap要显示的区域
+        private val srcRect = Rect()
+        // 这里存放canvas用来显示的区域
+        private val dstRect = Rect()
+
         init {
             paint.color = Color.RED
 
@@ -129,6 +134,10 @@ class ActiveWallpaperService : WallpaperService() {
             this.width = width
             this.height = height
 
+            dstRect.apply {
+                right = width
+                bottom = height
+            }
             loadWallpaper(wallpaperConfig ?: return)
         }
 
@@ -147,9 +156,14 @@ class ActiveWallpaperService : WallpaperService() {
         }
 
         private fun draw(canvas: Canvas) {
-//            Log.i(TAG, "Wallpaper scale:${wallpaper?.scale}")
-
             canvas.drawColor(Color.BLACK)
+
+            srcRect.apply {
+                right = 500
+                bottom = 500
+            }
+            canvas.drawBitmap(wallpaper?.bitmap ?: return, srcRect, dstRect, paint)
+
             canvas.drawCircle(width / 2f + rotation.x * 100f, height / 2f + rotation.y * 100f, 100f, paint)
         }
 
