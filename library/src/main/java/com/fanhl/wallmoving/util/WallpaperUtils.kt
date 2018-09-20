@@ -1,6 +1,7 @@
 package com.fanhl.wallmoving.util
 
 import android.graphics.*
+import android.util.Log
 import com.fanhl.wallmoving.model.Coord
 import com.fanhl.wallmoving.model.Vector2
 import com.fanhl.wallmoving.model.Wallpaper
@@ -11,8 +12,12 @@ import java.io.FileInputStream
 import java.io.FileNotFoundException
 
 object WallpaperUtils {
+    private val TAG = WallpaperUtils::class.java.simpleName
+
     fun loadWallpaperAsync(config: WallpaperConfig, screenSize: Coord, onWallpaperGot: (Wallpaper?) -> Unit) {
-        doAsync {
+        doAsync({
+            Log.e(TAG, "loadWallpaperAsync: doAsync:", it)
+        }) {
             loadWallpaper(config, screenSize, onWallpaperGot)
         }
     }
@@ -97,14 +102,14 @@ object WallpaperUtils {
             minOf(sourceHeight, visibleRectF.bottom.toInt())
         )
 
-        // 生成默认显示区域相对比总显示区域的缩放比率（只算最小的）
-        val scaleVisible = minOf(
+        // 生成默认显示区域相对比总显示区域的缩放比率（要最大的）
+        val scaleVisible = maxOf(
             centralScaledRect.width() / visibleRectF.width(),
             centralScaledRect.height() / visibleRectF.height()
         )
 
         // 加载要用到的图片区域
-        val bitmap = loadBitmap(fileInputStream, visibleRect)
+        val bitmap = loadBitmap(config.path, visibleRect)
 
         if (bitmap == null) {
             onWallpaperGot(null)
@@ -123,8 +128,8 @@ object WallpaperUtils {
     /**
      * 加载图片文件的文件流fileInputStream中对应区域rect的Bitmap
      */
-    private fun loadBitmap(fileInputStream: FileInputStream, rect: Rect): Bitmap? {
-        val bitmapRegionDecoder = BitmapRegionDecoder.newInstance(fileInputStream, false)
+    private fun loadBitmap(pathName: String, rect: Rect): Bitmap? {
+        val bitmapRegionDecoder = BitmapRegionDecoder.newInstance(pathName, false)
 
         val bitmap = bitmapRegionDecoder.decodeRegion(rect, BitmapFactory.Options())
 

@@ -147,7 +147,7 @@ class ActiveWallpaperService : WallpaperService() {
         }
 
         private fun draw(canvas: Canvas) {
-            Log.i(TAG, "Wallpaper scale:${wallpaper?.scale}")
+//            Log.i(TAG, "Wallpaper scale:${wallpaper?.scale}")
 
             canvas.drawColor(Color.BLACK)
             canvas.drawCircle(width / 2f + rotation.x * 100f, height / 2f + rotation.y * 100f, 100f, paint)
